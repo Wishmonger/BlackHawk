@@ -3,9 +3,14 @@ import os
 
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from docx.shared import Inches, Pt, Cm
-
+import datetime
 from docx.oxml.shared import OxmlElement
 from docx.oxml.ns import qn
+from pprint import pprint
+
+def get_Today():
+    date = datetime.date.today().strftime('%B %m %Y')
+    return date
 
 def insertHR(paragraph):
     p = paragraph._p  # p is the <w:p> XML element
@@ -50,9 +55,35 @@ def create_Blackhawk_header(doc):
     borders.append(bottom_border)
     table._tbl.tblPr.append(borders)
 
+
+def get_email():
+    pprint("Please enter the e-mail address of the client's insurance")
+
+def get_type():
+    response_Type = True
+    while response_Type:
+        response = input("Are you sending this letter through email or facsimile?")
+        try:
+            if response.lower() == 'email':
+                response_Type = False
+                return('email')
+            elif response.lower() == 'facsimile':
+                response_Type = False
+                return('facsimile')
+            else:
+                pprint("Please enter either 'email' or 'facsimile'")
+        except:
+            pprint("Please enter only enter email or facsimile")
+
+
 def create_1P_LoR():
     doc = Document()
     create_Blackhawk_header(doc)
+    starting_Para = doc.add_paragraph('\n'+get_Today()+'\n')
+    type = get_type()
+
+    starting_Para.add_run(type)
+
 
 
 
