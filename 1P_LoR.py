@@ -7,6 +7,8 @@ import datetime
 from docx.oxml.shared import OxmlElement
 from docx.oxml.ns import qn
 from pprint import pprint
+import re
+import phonenumbers
 
 def get_Today():
     date = datetime.date.today().strftime('%B %m %Y')
@@ -57,17 +59,36 @@ def create_Blackhawk_header(doc):
 
 
 def get_email():
-    pprint("Please enter the e-mail address of the client's insurance")
+    response_email = True
+    while response_email:
+        response = input("Please enter the e-mail address of the client's insurance\n")
+        if re.fullmatch(r"[^@]+@[^@]+\.[^@]+", response):
+           response_email = False
+           return response
+        else:
+            pprint(f'You responded with {response}. My basic validation determined it is not a valid e-mail address. Please try again.\n')
+
+def get_facsimile():
+    response_facsimile = True
+    while response_facsimile:
+        response = input("Please enter the Fax Number of the client's insurance. Ignore the 1 in front.\n")
+        parsed_Object = phonenumbers.parse(response, 'US')
+        if phonenumbers.is_valid_number(parsed_Object):
+            formatted = phonenumbers.format_number(parsed_Object, 'US')
+            pprint(formatted)
+            return(formatted)
+        else:
+            pprint(f'You responded with {response}. My validation determined it was not a legitimate number. Please try again.\n')
 
 def get_type():
     response_Type = True
     while response_Type:
-        response = input("Are you sending this letter through email or facsimile?")
+        response = input("Are you sending this letter through email or facsimile?\n")
         try:
             if response.lower() == 'email':
                 response_Type = False
                 return('email')
-            elif response.lower() == 'facsimile':
+            elif response.lower() == 'facsimile' or response.lower() == 'fax':
                 response_Type = False
                 return('facsimile')
             else:
@@ -81,8 +102,14 @@ def create_1P_LoR():
     create_Blackhawk_header(doc)
     starting_Para = doc.add_paragraph('\n'+get_Today()+'\n')
     type = get_type()
+    facsimile_or_email = ''
+    if type == 'email':
+        facsimile_or_email = get_email()
+    elif type == 'facsimile':
+        facsimile_or_email = get_facsimile()
 
-    starting_Para.add_run(type)
+
+    starting_Para.add_run(type+" "+str(facsimile_or_email))
 
 
 
