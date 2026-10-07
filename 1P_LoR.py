@@ -84,17 +84,33 @@ def get_type():
     response_Type = True
     while response_Type:
         response = input("Are you sending this letter through email or facsimile?\n")
+        if response.lower() == 'email':
+            response_Type = False
+            return('Email')
+        elif response.lower() == 'facsimile' or response.lower() == 'fax':
+            response_Type = False
+            return('Facsimile')
+        else:
+            pprint("Please enter either 'email' or 'facsimile'")
+
+def get_client_count():
+    response_client_count = True
+    while response_client_count:
+        client_count:float = input("Please enter the number of clients\n")
         try:
-            if response.lower() == 'email':
-                response_Type = False
-                return('email')
-            elif response.lower() == 'facsimile' or response.lower() == 'fax':
-                response_Type = False
-                return('facsimile')
+            if client_count.is_integer() and client_count.isdigit() > 0:
+                return client_count
             else:
-                pprint("Please enter either 'email' or 'facsimile'")
+                pprint("Please enter only a positive integer")
         except:
-            pprint("Please enter only enter email or facsimile")
+            pprint("Please enter only a positive integer")
+
+def get_client():
+    response_client_name = True
+    while response_client_name:
+        response = input("Please enter the client name\n")
+        try:
+
 
 
 def create_1P_LoR():
@@ -103,16 +119,17 @@ def create_1P_LoR():
     starting_Para = doc.add_paragraph('\n'+get_Today()+'\n')
     type = get_type()
     facsimile_or_email = ''
-    if type == 'email':
+    if type == 'Email':
         facsimile_or_email = get_email()
-    elif type == 'facsimile':
+    elif type == 'Facsimile':
         facsimile_or_email = get_facsimile()
 
 
-    starting_Para.add_run(type+" "+str(facsimile_or_email))
+    runner = starting_Para.add_run(f'\nSent Via {type}: {facsimile_or_email} \n')
+    runner.bold = True
+    runner.italic = True
 
-
-
+    
 
     doc.save("1P_LoR.docx")
 
